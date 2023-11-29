@@ -6,7 +6,7 @@ import axios from 'axios';
 
 const App = () => {
   const [webhookPayload, setWebhookPayload] = useState<any>(null);
-  const [githubToken, setGithubToken] = useState<String | null>('');
+  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
   const socket = socketIOClient('https://github-app-server.onrender.com'); // Replace with your server URL
 
   useEffect(() => {
@@ -22,30 +22,10 @@ const App = () => {
     };
   }, [socket]);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        // Fetch repositories after login
-        const sendingGithubToken = await axios.post('https://github-app-server.onrender.com', githubToken);
-        const response = await axios.get('https://github-app-server.onrender.com/fetch-repos');
-        const repos = response.data.repos;
-
-        // Create webhooks for the fetched repositories
-        await axios.post('https://github-app-server.onrender.com/create-webhooks', { repos });
-      } catch (error) {
-        console.error('Error fetching repositories:', error);
-      }
-    };
-
-    if (githubToken !== null) {
-      fetchData();
-    }
-  }, [githubToken]);
-
   return (
     <div className="App">
       Github App
-      <Login setGithubToken={setGithubToken} />
+      <Login setIsLoggedIn={setIsLoggedIn} />
       {webhookPayload && (
         <div>
           <h3>Webhook Payload</h3>
