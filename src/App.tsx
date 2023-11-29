@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import './App.css';
 import Login from './components/Login';
 import socketIOClient from 'socket.io-client';
+import axios from 'axios';
 
 const App = () => {
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
@@ -21,6 +22,25 @@ const App = () => {
     };
   }, [socket]);
 
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        // Fetch repositories after login
+        const response = await axios.get('https://github-app-server.onrender.com/fetch-repos');
+        const repos = response.data.repos;
+
+        // Create webhooks for the fetched repositories
+        await axios.post('https://github-app-server.onrender.com/create-webhooks', { repos });
+      } catch (error) {
+        console.error('Error fetching repositories:', error);
+      }
+    };
+
+    if (isLoggedIn) {
+      fetchData();
+    }
+  }, [isLoggedIn]);
+
   return (
     <div className="App">
       Github App
@@ -29,6 +49,7 @@ const App = () => {
         <div>
           <h3>Webhook Payload</h3>
           <div className="commit-box">
+            <p>Repository: {webhookPayload.repository.full_name}</p>
             <p>Repository: {webhookPayload.repository.full_name}</p>
             <p>Commit ID: {webhookPayload.head_commit.id}</p>
             <p>Author: {webhookPayload.head_commit.author.name}</p>
@@ -42,3 +63,4 @@ const App = () => {
 };
 
 export default App;
+
