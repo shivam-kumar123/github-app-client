@@ -28,7 +28,13 @@ const App = () => {
       {webhookPayload && (
         <div>
           <h3>Webhook Payload</h3>
-          <pre>{JSON.stringify(webhookPayload, null, 2)}</pre>
+          <div className="commit-box">
+            <p>Repository: {webhookPayload.repository.full_name}</p>
+            <p>Commit ID: {webhookPayload.head_commit.id}</p>
+            <p>Author: {webhookPayload.head_commit.author.name}</p>
+            <p>Message: {webhookPayload.head_commit.message}</p>
+            {/* Add more details as needed */}
+          </div>
         </div>
       )}
     </div>
