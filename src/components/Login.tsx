@@ -2,10 +2,10 @@ import React, {useEffect} from 'react';
 import axios from 'axios';
 
 type Props = {
-    setGithubToken: (githubToken: String | null) => void;
+    setIsLoggedIn: (isLoggedIn: boolean) => void;
 }
 
-const Login = ({setGithubToken}: Props) => {
+const Login = ({setIsLoggedIn}: Props) => {
 
     const handleGithubLogin = async () => {
         window.location.assign("https://github.com/login/oauth/authorize?client_id=" + process.env.REACT_APP_CLIENT_ID);
@@ -17,7 +17,7 @@ const Login = ({setGithubToken}: Props) => {
         const codeParam = urlParams.get('code');
         console.log(codeParam);
         if (codeParam !== null) {
-            setGithubToken(codeParam);
+            setIsLoggedIn(true);
         }
     }, []);
 
