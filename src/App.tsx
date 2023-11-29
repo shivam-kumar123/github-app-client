@@ -17,9 +17,9 @@ const App = () => {
     });
 
     // Clean up the event listener when the component unmounts
-    return () => {
-      socket.disconnect();
-    };
+    // return () => {
+    //   socket.disconnect();
+    // };
   }, [socket]);
 
   useEffect(() => {
