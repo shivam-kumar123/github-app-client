@@ -22,6 +22,29 @@ const App = () => {
     };
   }, [socket]);
 
+  useEffect(() => {
+    const fetchLastNotification = async () => {
+      try {
+        const response = await axios.get('https://github-app-server.onrender.com/last-notification');
+        const lastNotification = response.data;
+  
+        if (lastNotification) {
+          // Store the last notification in localStorage
+          localStorage.setItem('notifications', JSON.stringify(lastNotification));
+          setWebhookPayload(lastNotification);
+        }
+      } catch (error) {
+        console.error('Error fetching last notification:', error);
+      }
+    };
+  
+    // Fetch the last notification when the component mounts
+    fetchLastNotification();
+  
+    // ... (existing code)
+  }, [socket]);
+  
+
   return (
     <div className="App">
       Github App
