@@ -1,3 +1,4 @@
+// client/App.tsx
 import React, { useState, useEffect } from 'react';
 import './App.css';
 import Login from './components/Login';
@@ -7,19 +8,14 @@ import axios from 'axios';
 const App = () => {
   const [webhookPayload, setWebhookPayload] = useState<any>(null);
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
-  const socket = socketIOClient('https://github-app-server.onrender.com'); // Replace with your server URL
+  const [githubUsername, setGitHubUsername] = useState<string | null>(null); // New state variable
+  const socket = socketIOClient('https://github-app-server.onrender.com');
 
   useEffect(() => {
-    // Listen for 'webhookEvent' from the server
     socket.on('webhookEvent', (payload) => {
       console.log('Received webhook event:', payload);
       setWebhookPayload(payload);
     });
-
-    // Clean up the event listener when the component unmounts
-    // return () => {
-    //   socket.disconnect();
-    // };
   }, [socket]);
 
   useEffect(() => {
@@ -27,9 +23,8 @@ const App = () => {
       try {
         const response = await axios.get('https://github-app-server.onrender.com/last-notification');
         const lastNotification = response.data;
-  
+
         if (lastNotification) {
-          // Store the last notification in localStorage
           localStorage.setItem('notifications', JSON.stringify(lastNotification));
           setWebhookPayload(lastNotification);
         }
@@ -37,28 +32,22 @@ const App = () => {
         console.error('Error fetching last notification:', error);
       }
     };
-  
-    // Fetch the last notification when the component mounts
+
     fetchLastNotification();
-  
-    // ... (existing code)
   }, [socket]);
-  
 
   return (
     <div className="App">
       Github App
-      <Login setIsLoggedIn={setIsLoggedIn} />
+      {isLoggedIn && githubUsername && (
+        <div className="user-info">Logged in as: {githubUsername}</div>
+      )}
+      <Login setIsLoggedIn={setIsLoggedIn} setGitHubUsername={setGitHubUsername} />
       {webhookPayload && (
         <div>
           <h3>Webhook Payload</h3>
           <div className="commit-box">
-            <p>Repository: {webhookPayload.repository.full_name}</p>
-            <p>Repository: {webhookPayload.repository.full_name}</p>
-            <p>Commit ID: {webhookPayload.head_commit.id}</p>
-            <p>Author: {webhookPayload.head_commit.author.name}</p>
-            <p>Message: {webhookPayload.head_commit.message}</p>
-            {/* Add more details as needed */}
+            {/* Render webhook payload details */}
           </div>
         </div>
       )}
@@ -67,4 +56,3 @@ const App = () => {
 };
 
 export default App;
-
