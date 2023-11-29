@@ -5,8 +5,8 @@ import socketIOClient from 'socket.io-client';
 import axios from 'axios';
 
 const App = () => {
-  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
   const [webhookPayload, setWebhookPayload] = useState<any>(null);
+  const [githubToken, setGithubToken] = useState<String | null>(null);
   const socket = socketIOClient('https://github-app-server.onrender.com'); // Replace with your server URL
 
   useEffect(() => {
@@ -26,6 +26,7 @@ const App = () => {
     const fetchData = async () => {
       try {
         // Fetch repositories after login
+        const sendingGithubToken = await axios.post('https://github-app-server.onrender.com', githubToken);
         const response = await axios.get('https://github-app-server.onrender.com/fetch-repos');
         const repos = response.data.repos;
 
@@ -36,15 +37,15 @@ const App = () => {
       }
     };
 
-    if (isLoggedIn) {
+    if (githubToken !== null) {
       fetchData();
     }
-  }, [isLoggedIn]);
+  }, [githubToken]);
 
   return (
     <div className="App">
       Github App
-      <Login setIsLoggedIn={setIsLoggedIn} />
+      <Login setGithubToken={setGithubToken} />
       {webhookPayload && (
         <div>
           <h3>Webhook Payload</h3>
@@ -63,4 +64,3 @@ const App = () => {
 };
 
 export default App;
-
