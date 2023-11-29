@@ -6,7 +6,7 @@ import axios from 'axios';
 
 const App = () => {
   const [webhookPayload, setWebhookPayload] = useState<any>(null);
-  const [githubToken, setGithubToken] = useState<String | null>(null);
+  const [githubToken, setGithubToken] = useState<any>(null);
   const socket = socketIOClient('https://github-app-server.onrender.com'); // Replace with your server URL
 
   useEffect(() => {
